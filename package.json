@@ -1,0 +1,74 @@
+{
+  "name": "adblock-probe",
+  "version": "0.1.0",
+  "description": "Minimal, framework-agnostic ad blocking behavior detection for the browser.",
+  "keywords": [
+    "ad-blocker",
+    "adblock",
+    "detection",
+    "react"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "default": "./dist/react.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint src test tsdown.config.ts vitest.config.ts vitest.browser.config.ts",
+    "format": "oxfmt src test *.json *.ts *.md pnpm-workspace.yaml",
+    "format:check": "oxfmt --check src test *.json *.ts *.md pnpm-workspace.yaml",
+    "pretest": "pnpm build",
+    "test": "vitest run --config vitest.config.ts",
+    "test:browser": "vitest run --config vitest.browser.config.ts",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:browser",
+    "pack:check": "pnpm build && npm pack --dry-run --cache ./.npm-cache",
+    "prepublishOnly": "pnpm check && pnpm pack:check"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitest/browser-playwright": "^4.1.0",
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.0.0",
+    "playwright": "^1.55.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.0",
+    "vitest": "^4.1.0",
+    "vitest-browser-react": "^2.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.21.0"
+}
