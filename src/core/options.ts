@@ -28,6 +28,9 @@ export type NormalizedDetectorOptions = Readonly<{
   network?: NormalizedNetworkProbeOptions;
 }>;
 
+/**
+ * Applies the default timeout and rejects values that cannot represent a usable duration.
+ */
 function normalizeTimeout(value: number | undefined, fallback: number, label: string): number {
   const timeout = value ?? fallback;
 
@@ -38,6 +41,9 @@ function normalizeTimeout(value: number | undefined, fallback: number, label: st
   return timeout;
 }
 
+/**
+ * Validates DOM probe options and returns an immutable, fully populated representation.
+ */
 function normalizeDomOptions(options: DomProbeOptions | undefined): NormalizedDomProbeOptions {
   const id = options?.id ?? DEFAULT_DOM_ID;
   const classNames = [...new Set(options?.classNames ?? DEFAULT_DOM_CLASS_NAMES)];
@@ -63,6 +69,9 @@ function normalizeDomOptions(options: DomProbeOptions | undefined): NormalizedDo
   });
 }
 
+/**
+ * Restricts probe resources to root-relative URLs without fragments.
+ */
 function assertRootRelativeUrl(value: string, label: string): void {
   if (
     !value.startsWith("/") ||
@@ -74,6 +83,9 @@ function assertRootRelativeUrl(value: string, label: string): void {
   }
 }
 
+/**
+ * Validates network probe options and returns an immutable, fully populated representation.
+ */
 function normalizeNetworkOptions(options: NetworkProbeOptions): NormalizedNetworkProbeOptions {
   assertRootRelativeUrl(options.controlUrl, "network.controlUrl");
   assertRootRelativeUrl(options.baitUrl, "network.baitUrl");
@@ -94,6 +106,9 @@ function normalizeNetworkOptions(options: NetworkProbeOptions): NormalizedNetwor
   });
 }
 
+/**
+ * Validates detector options and resolves all defaults into an immutable representation.
+ */
 export function normalizeOptions(options: AdBlockDetectorOptions = {}): NormalizedDetectorOptions {
   const dom = options.dom === false ? false : normalizeDomOptions(options.dom);
   const network =
@@ -106,6 +121,9 @@ export function normalizeOptions(options: AdBlockDetectorOptions = {}): Normaliz
   return Object.freeze(network === undefined ? { dom } : { dom, network });
 }
 
+/**
+ * Produces a stable value used to detect effective option changes across React renders.
+ */
 export function fingerprintOptions(options: AdBlockDetectorOptions | undefined): string {
   return JSON.stringify(normalizeOptions(options));
 }

@@ -28,11 +28,18 @@ type ProviderState = Readonly<{
   initialOptionsFingerprint: string | undefined;
 }>;
 
+/**
+ * Reads the bundler-provided development flag without assuming it exists.
+ */
 function isDevelopmentBuild(): boolean {
   const meta = import.meta as ImportMeta & { env?: { DEV?: boolean } };
   return meta.env?.DEV === true;
 }
 
+/**
+ * Provides one detector for its lifetime and disposes it on unmount when created from options.
+ * Changing configuration requires remounting the provider with a different React key.
+ */
 export function AdBlockDetectorProvider(props: AdBlockDetectorProviderProps) {
   const [state] = useState<ProviderState>(() => {
     if (props.detector !== undefined) {

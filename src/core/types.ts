@@ -23,10 +23,25 @@ export type AdBlockDetectorOptions = Readonly<{
 }>;
 
 export interface AdBlockDetector {
+  /**
+   * Returns the current immutable detection snapshot.
+   */
   getSnapshot: () => DetectionSnapshot;
+  /**
+   * Subscribes to snapshot changes and returns an unsubscribe function.
+   */
   subscribe: (listener: () => void) => () => void;
+  /**
+   * Runs detection once and reuses the completed result on later calls.
+   */
   detect: () => Promise<DetectionSnapshot>;
+  /**
+   * Runs detection again, sharing any evaluation that is already in progress.
+   */
   refresh: () => Promise<DetectionSnapshot>;
+  /**
+   * Cancels active work and permanently releases this detector's listeners.
+   */
   dispose: () => void;
 }
 

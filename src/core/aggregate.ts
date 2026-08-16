@@ -1,5 +1,9 @@
 import type { Probe, ProbeResult } from "./types";
 
+/**
+ * Combines probe results with `true` taking precedence over `null`, then `false`.
+ * An indeterminate probe prevents an all-clear result unless another probe detected blocking.
+ */
 export function aggregateProbeResults(results: readonly ProbeResult[]): ProbeResult {
   if (results.some((result) => result === true)) {
     return true;
@@ -12,6 +16,10 @@ export function aggregateProbeResults(results: readonly ProbeResult[]): ProbeRes
   return false;
 }
 
+/**
+ * Runs all probes concurrently and resolves as soon as blocking is detected.
+ * Probe failures and external cancellation are treated as indeterminate results.
+ */
 export function evaluateProbes(
   probes: readonly Probe[],
   controller: AbortController,

@@ -2,6 +2,9 @@ import type { DetectorEnvironment } from "../environment";
 import type { NormalizedDomProbeOptions } from "../options";
 import type { ProbeResult } from "../types";
 
+/**
+ * Waits until a body is available, or stops waiting when the probe is aborted.
+ */
 function waitForBody(document: Document, signal: AbortSignal): Promise<HTMLElement | null> {
   if (document.body !== null) {
     return Promise.resolve(document.body);
@@ -21,6 +24,9 @@ function waitForBody(document: Document, signal: AbortSignal): Promise<HTMLEleme
   });
 }
 
+/**
+ * Waits for a visible document so background-tab throttling does not skew the probe.
+ */
 function waitForVisibility(document: Document, signal: AbortSignal): Promise<boolean> {
   if (document.visibilityState === "visible") {
     return Promise.resolve(true);
@@ -44,6 +50,9 @@ function waitForVisibility(document: Document, signal: AbortSignal): Promise<boo
   });
 }
 
+/**
+ * Waits for one rendering opportunity and resolves `false` if the probe is aborted first.
+ */
 function waitForFrame(document: Document, signal: AbortSignal): Promise<boolean> {
   return new Promise((resolve) => {
     const view = document.defaultView;
@@ -72,6 +81,9 @@ function waitForFrame(document: Document, signal: AbortSignal): Promise<boolean>
   });
 }
 
+/**
+ * Waits for the observation window and resolves `false` if the probe is aborted first.
+ */
 function waitForDuration(durationMs: number, signal: AbortSignal): Promise<boolean> {
   if (durationMs <= 0) {
     return Promise.resolve(!signal.aborted);
@@ -90,6 +102,9 @@ function waitForDuration(durationMs: number, signal: AbortSignal): Promise<boole
   });
 }
 
+/**
+ * Positions an element off-screen while preserving a measurable layout box.
+ */
 function styleProbeElement(element: HTMLElement): void {
   element.style.position = "absolute";
   element.style.left = "-10000px";
@@ -99,6 +114,10 @@ function styleProbeElement(element: HTMLElement): void {
   element.style.pointerEvents = "none";
 }
 
+/**
+ * Compares the bait with an unclassified control element.
+ * An unusable control makes the result indeterminate because page CSS may affect both elements.
+ */
 function readProbeResult(document: Document, control: HTMLElement, bait: HTMLElement): ProbeResult {
   const view = document.defaultView;
   if (view === null || !control.isConnected) {
@@ -144,6 +163,10 @@ function readProbeResult(document: Document, control: HTMLElement, bait: HTMLEle
   }
 }
 
+/**
+ * Detects blocking by observing whether a bait element is removed, hidden, or resized relative to
+ * an equivalent control element during the configured observation window.
+ */
 export async function runDomProbe(
   options: NormalizedDomProbeOptions,
   environment: DetectorEnvironment,

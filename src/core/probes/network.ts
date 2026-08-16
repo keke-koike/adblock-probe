@@ -2,6 +2,9 @@ import type { DetectorEnvironment } from "../environment";
 import type { NormalizedNetworkProbeOptions } from "../options";
 import type { ProbeResult } from "../types";
 
+/**
+ * Fetches a probe resource and verifies its exact payload within the configured timeout.
+ */
 async function requestMatches(
   url: string,
   expectedText: string,
@@ -35,6 +38,11 @@ async function requestMatches(
   }
 }
 
+/**
+ * Compares an ordinary control request with an ad-like bait request.
+ * A failed control is indeterminate; only a successful control paired with a failed bait indicates
+ * blocking.
+ */
 export async function runNetworkProbe(
   options: NormalizedNetworkProbeOptions,
   environment: DetectorEnvironment,

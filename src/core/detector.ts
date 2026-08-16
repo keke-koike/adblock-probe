@@ -13,10 +13,18 @@ import type {
 
 const NULL_SNAPSHOT: DetectionSnapshot = Object.freeze({ detected: null });
 
+/**
+ * Reuses the indeterminate snapshot so unchanged state retains referential identity.
+ */
 function createSnapshot(detected: Detected): DetectionSnapshot {
   return detected === null ? NULL_SNAPSHOT : Object.freeze({ detected });
 }
 
+/**
+ * Creates a stateful detector around a fixed set of probes.
+ * Concurrent requests share one evaluation, completed detections are cached, and refreshes rerun
+ * the probes once the current evaluation has settled.
+ */
 export function createDetectorFromProbes(probes: readonly Probe[]): AdBlockDetector {
   if (probes.length === 0) {
     throw new TypeError("At least one probe must be enabled.");
@@ -47,6 +55,9 @@ export function createDetectorFromProbes(probes: readonly Probe[]): AdBlockDetec
     }
   };
 
+  /**
+   * Starts an evaluation, optionally bypassing a previously completed result.
+   */
   const start = (force: boolean): Promise<DetectionSnapshot> => {
     assertActive();
 
@@ -107,6 +118,9 @@ export function createDetectorFromProbes(probes: readonly Probe[]): AdBlockDetec
   });
 }
 
+/**
+ * Creates a detector with an injectable environment for platform-independent testing.
+ */
 export function createAdBlockDetectorInternal(
   options: AdBlockDetectorOptions = {},
   environment: DetectorEnvironment = browserEnvironment,
@@ -127,6 +141,9 @@ export function createAdBlockDetectorInternal(
   return createDetectorFromProbes(probes);
 }
 
+/**
+ * Creates an ad-block detector backed by the current browser environment.
+ */
 export function createAdBlockDetector(options: AdBlockDetectorOptions = {}): AdBlockDetector {
   return createAdBlockDetectorInternal(options);
 }

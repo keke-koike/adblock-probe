@@ -9,6 +9,9 @@ import { AdBlockDetectorContext } from "./context";
 const SERVER_SNAPSHOT: DetectionSnapshot = Object.freeze({ detected: null });
 let defaultDetector: AdBlockDetector | undefined;
 
+/**
+ * Lazily creates the shared detector used when no provider is present.
+ */
 function getDefaultDetector(): AdBlockDetector {
   defaultDetector ??= createAdBlockDetector();
   return defaultDetector;
@@ -16,6 +19,9 @@ function getDefaultDetector(): AdBlockDetector {
 
 export type UseAdBlockDetectorResult = DetectionSnapshot;
 
+/**
+ * Subscribes to the nearest detector and starts detection after the component mounts.
+ */
 export function useAdBlockDetector(): UseAdBlockDetectorResult {
   const contextDetector = useContext(AdBlockDetectorContext);
   const detector = contextDetector ?? getDefaultDetector();
