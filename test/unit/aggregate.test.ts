@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { aggregateProbeResults, runAndAggregateProbes } from "../../src/core/aggregate";
+import { aggregateProbeResults, evaluateProbes } from "../../src/core/aggregate";
 
 describe("aggregateProbeResults", () => {
   it.each([
@@ -13,7 +13,7 @@ describe("aggregateProbeResults", () => {
   });
 });
 
-describe("runAndAggregateProbes", () => {
+describe("evaluateProbes", () => {
   it("settles early on a positive result and aborts remaining probes", async () => {
     const slowProbe = vi.fn(
       (signal: AbortSignal) =>
@@ -23,9 +23,7 @@ describe("runAndAggregateProbes", () => {
     );
     const controller = new AbortController();
 
-    await expect(runAndAggregateProbes([slowProbe, async () => true], controller)).resolves.toBe(
-      true,
-    );
+    await expect(evaluateProbes([slowProbe, async () => true], controller)).resolves.toBe(true);
     expect(controller.signal.aborted).toBe(true);
     expect(slowProbe).toHaveBeenCalledOnce();
   });
@@ -33,7 +31,7 @@ describe("runAndAggregateProbes", () => {
   it("maps probe exceptions to an indeterminate result", async () => {
     const controller = new AbortController();
     await expect(
-      runAndAggregateProbes(
+      evaluateProbes(
         [
           async () => {
             throw new Error("probe failed");

@@ -12,7 +12,7 @@ export function aggregateProbeResults(results: readonly ProbeResult[]): ProbeRes
   return false;
 }
 
-export function runAndAggregateProbes(
+export function evaluateProbes(
   probes: readonly Probe[],
   controller: AbortController,
 ): Promise<ProbeResult> {

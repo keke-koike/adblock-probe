@@ -1,4 +1,4 @@
-import { runAndAggregateProbes } from "./aggregate";
+import { evaluateProbes } from "./aggregate";
 import { browserEnvironment, type DetectorEnvironment } from "./environment";
 import { normalizeOptions } from "./options";
 import { runDomProbe } from "./probes/dom";
@@ -63,7 +63,7 @@ export function createDetectorFromProbes(probes: readonly Probe[]): AdBlockDetec
     const controller = new AbortController();
     currentController = controller;
 
-    const promise = runAndAggregateProbes(probes, controller)
+    const promise = evaluateProbes(probes, controller)
       .then((detected) => {
         if (!disposed && generation === runGeneration) {
           completed = true;
