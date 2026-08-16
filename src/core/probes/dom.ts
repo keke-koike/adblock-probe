@@ -144,6 +144,10 @@ function readProbeResult(document: Document, control: HTMLElement, bait: HTMLEle
 
     const baitStyle = view.getComputedStyle(bait);
     const baitRect = bait.getBoundingClientRect();
+    /**
+     * Only states that prevent the bait from being visibly rendered are conclusive.
+     * A non-zero size difference can come from legitimate page styles and does not prove blocking.
+     */
     if (
       baitStyle.display === "none" ||
       baitStyle.visibility === "hidden" ||
@@ -154,18 +158,15 @@ function readProbeResult(document: Document, control: HTMLElement, bait: HTMLEle
       return true;
     }
 
-    const dimensionChanged =
-      Math.abs(baitRect.width - controlRect.width) > 0.5 ||
-      Math.abs(baitRect.height - controlRect.height) > 0.5;
-    return dimensionChanged ? true : false;
+    return false;
   } catch {
     return null;
   }
 }
 
 /**
- * Detects blocking by observing whether a bait element is removed, hidden, or resized relative to
- * an equivalent control element during the configured observation window.
+ * Detects blocking by observing whether a bait element is removed, hidden, or collapsed to a
+ * zero-sized layout box during the configured observation window.
  */
 export async function runDomProbe(
   options: NormalizedDomProbeOptions,
